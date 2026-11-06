@@ -83,7 +83,7 @@ function findSourceCheckoutBinding(): string | undefined {
 }
 
 /** Loads the binding: the installed package first, then a source checkout build. */
-export function loadIrohBinding(): IrohBinding {
+export function loadIrohBinding(): typeof import("../../../../crates/openclaw-iroh-node/index.js") {
   const require = createRequire(import.meta.url);
   const errors: string[] = [];
   for (const specifier of [PACKAGE_NAME, findSourceCheckoutBinding()]) {
@@ -92,7 +92,7 @@ export function loadIrohBinding(): IrohBinding {
     }
     try {
       // SAFETY: the iroh-node package exports this binding surface; IrohBinding lists only what the child calls.
-      return require(specifier) as IrohBinding;
+      return require(specifier) as typeof import("../../../../crates/openclaw-iroh-node/index.js");
     } catch (error) {
       errors.push(
         `${specifier}: ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`,
