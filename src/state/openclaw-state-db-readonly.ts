@@ -409,7 +409,7 @@ function withFreshOpenClawStateDatabaseReadOnly<T>(
     if (!opened) {
       opened = openOpenClawStateReadOnlyLocation(
         pathname,
-        prepareSqliteReadOnlyLocationSync(pathname),
+        prepareSqliteReadOnlyLocationSync(pathname, undefined, { reuse: true }),
       );
       readers.set(pathname, opened);
     }
@@ -421,7 +421,7 @@ function withFreshOpenClawStateDatabaseReadOnly<T>(
     return result;
   }
   const prepared = requiresArtifactPreservingSnapshot(pathname)
-    ? prepareSqliteReadOnlyLocationSync(pathname)
+    ? prepareSqliteReadOnlyLocationSync(pathname, undefined, { reuse: true })
     : undefined;
   // Maintenance must release readers before replacing store files.
   return withOpenClawStateReadOnlyLocation(
@@ -702,7 +702,9 @@ export function withExistingOpenClawStateDatabaseCurrentReadOnly<T>(
     return withOpenClawStateReadOnlyLocation(
       operation,
       pathname,
-      directRead ? pathname : prepareSqliteReadOnlyLocationSync(pathname),
+      directRead
+        ? pathname
+        : prepareSqliteReadOnlyLocationSync(pathname, undefined, { reuse: true }),
       openStateSchemaReadAdmission,
     );
   });
@@ -744,6 +746,7 @@ export function withExistingOpenClawStateDatabaseArtifactPreservingReadOnlyAsync
     }
     const prepared = await prepareSqliteReadOnlyLocation(pathname, {
       preserveSourceArtifacts: true,
+      reuse: true,
     });
     try {
       // Verification can quarantine the live path while the snapshot child is running.

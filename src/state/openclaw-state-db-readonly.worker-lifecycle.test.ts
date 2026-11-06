@@ -39,6 +39,11 @@ vi.mock("../infra/sqlite-readonly-location.js", async (importOriginal) => ({
 }));
 let finishProducer: (() => void) | undefined;
 // mock-isolation: Exercise read cleanup with a controlled transport instead of native workers.
+vi.mock("./openclaw-state-db-readonly-reuse.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./openclaw-state-db-readonly-reuse.js")>()),
+  // These borrowed handles are fakes; image sharing has its own work-count tests.
+  canReadWarmNativeSourceIndependently: () => false,
+}));
 vi.mock("./openclaw-state-read-worker.js", () => {
   const fixture = createReadWorkerFixture(mock.read, mock.close);
   return {
